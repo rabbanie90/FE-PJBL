@@ -1,9 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import heroPeminjaman from '../assets/hero_peminjaman.png'
 import logoPeminjaman from '../assets/logo.png'
 import LoginPage from '../pages/LoginPages'
 import { Link } from 'react-router-dom';
 import SijarLogin from "../pages/LoginPages";
+import axios from '../api/axios';
+import loading from './loading_gray.json'
+import logoPPLG from '../../public/pplg.png'
+import logoTJKT from '../../public/tjkt.png'
+import logoLK from '../../public/lk1.png'
+import logoPS from '../../public/ps.png'
+import logoDKV from '../../public/dkv.png'
  
 const COLORS = {
   bluePrimary: "#4A90D9",
@@ -191,15 +198,6 @@ const jurusanList = [
   { name: "LK",   full: "Layanan Kesehatan", icon: "🏥" },
   { name: "PS",   full: "Perhotelan & Spa", icon: "🏨" },
   { name: "DKV",  full: "Desain Komunikasi Visual", icon: "🎨" },
-];
- 
-const barangList = [
-  { name: "Laptop Dell Inspiron", kategori: "PPLG", status: "Tersedia", color: "#EAF7F2", img: "https://via.placeholder.com/400x220/D6EAFA/4A90D9?text=Laptop" },
-  { name: "Proyektor Epson", kategori: "TJKT", status: "Tersedia", color: "#EAF7F2", img: "https://via.placeholder.com/400x220/D6EAFA/4A90D9?text=Proyektor" },
-  { name: "Stetoskop Littmann", kategori: "LK", status: "Dipinjam", color: "#FFF4F4", img: "https://via.placeholder.com/400x220/F0F7FF/4A90D9?text=Stetoskop" },
-  { name: "Kamera DSLR Canon", kategori: "DKV", status: "Tersedia", color: "#EAF7F2", img: "https://via.placeholder.com/400x220/D6EAFA/4A90D9?text=Kamera" },
-  { name: "Tablet Grafis Wacom", kategori: "DKV", status: "Tersedia", color: "#EAF7F2", img: "https://via.placeholder.com/400x220/D6EAFA/4A90D9?text=Tablet+Grafis" },
-  { name: "Router MikroTik", kategori: "TJKT", status: "Tersedia", color: "#EAF7F2", img: "https://via.placeholder.com/400x220/D6EAFA/4A90D9?text=Router" },
 ];
  
 function useInView(ref, threshold = 0.12) {
@@ -413,7 +411,29 @@ function Tentang() {
   );
 }
  
-function Jurusan() {
+function JurusanData() {
+  const [jurusanList, setJurusanList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null)
+   useEffect(()=>{
+    axios.get('/landing')
+    .then(res => {
+      console.log(res.data);
+      const data = res.data.data;
+      setJurusanList(data.jurusan);
+      console.log(data.jurusan)
+      setLoading(false);
+        // Data dari Laravel
+        console.log(res.status);    // Status code (200, 201, dll)
+        console.log(res.headers);   // Response headers
+        console.log('Kategori jurusan pertama:', data.jurusan[0].nama_kategori);
+    })
+    .catch(err => {
+      setErr(err.message);
+      setLoading(false)
+    });
+  }, []);
+
   return (
     <section id="jurusan" style={{ padding: "5rem 1.5rem", background: "var(--sky)" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -430,11 +450,10 @@ function Jurusan() {
  
         <div className="jurusan-grid" style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: "1rem" }}>
           {jurusanList.map((j, i) => (
-            <FadeSection key={j.name} delay={i * 70}>
+            <FadeSection key={j.nama_kategori} delay={i * 70}>
               <div className="jurusan-card">
                 <div className="j-icon" style={{ fontSize: 22 }}>{j.icon}</div>
-                <h3 className="j-title" style={{ fontWeight: 800, fontSize: "1.05rem", color: "var(--blue-dkr)", marginBottom: ".3rem" }}>{j.name}</h3>
-                <p className="j-sub" style={{ fontSize: ".75rem", color: "var(--tx-m)", lineHeight: 1.45 }}>{j.full}</p>
+                <h3 className="j-title" style={{ fontWeight: 800, fontSize: "1.05rem", color: "var(--blue-dkr)", marginBottom: ".3rem" }}>{j.nama_kategori}</h3>
               </div>
             </FadeSection>
           ))}
@@ -444,13 +463,37 @@ function Jurusan() {
   );
 }
  
+
 function Barang() {
+  const [dataBarang, setdataBarang] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState(null)
+
+  useEffect(()=>{
+    axios.get('/landing')
+    .then(res => {
+      const data = res.data.data;
+      setdataBarang(data.barang);
+      setLoading(false);
+        // Data dari Laravel
+        console.log(res.status);    // Status code (200, 201, dll)
+        console.log(res.headers);   // Response headers
+        console.log('Kategori barang pertama:', data.barang[0]?.kategori_jurusan);
+    })
+    .catch(err => {
+      setErr(err.message);
+      setLoading(false)
+    });
+  }, []);
+
+  if(loading) return <p>Loading...</p>;
+  if(err) return <p>Error: {err}</p>;
   return (
     <section id="barang" style={{ padding: "5rem 1.5rem", background: "var(--white)" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <FadeSection style={{ textAlign: "center", marginBottom: "3rem" }}>
           <div className="section-chip" style={{ margin: "0 auto .75rem" }}>
-            📦 Inventaris Barang
+            Inventaris Barang
           </div>
           <h2 style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)", fontWeight: 800, color: "var(--blue-dkr)", marginBottom: ".6rem" }}>Barang yang Bisa Dipinjam</h2>
           <p style={{ color: "var(--tx-m)", maxWidth: 480, margin: "0 auto", fontSize: ".93rem", lineHeight: 1.7 }}>
@@ -459,23 +502,23 @@ function Barang() {
         </FadeSection>
  
         <div className="barang-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.25rem", marginBottom: "2rem" }}>
-          {barangList.map((b, i) => (
-            <FadeSection key={b.name} delay={i * 60}>
+          {dataBarang.map((b, i) => (
+            <FadeSection key={b.id ||b.nama_item} delay={i * 60}>
               <div className="card" style={{ overflow: "hidden" }}>
                 <div style={{ height: 170, background: "var(--blue-ltr)", overflow: "hidden" }}>
-                  <img src={b.img} alt={b.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img src={b.foto_barang || {loading} } alt={b.nama_item} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
                 <div style={{ padding: "1.1rem" }}>
                   <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: ".65rem" }}>
                     <div>
-                      <h4 style={{ fontWeight: 700, fontSize: ".93rem", color: "var(--blue-dkr)" }}>{b.name}</h4>
-                      <p style={{ fontSize: ".78rem", color: "var(--tx-m)" }}>{b.kategori}</p>
+                      <h4 style={{ fontWeight: 700, fontSize: ".93rem", color: "var(--blue-dkr)" }}>{b.nama_item}</h4>
+                      <p style={{ fontSize: ".78rem", color: "var(--tx-m)" }}>{b.kategori_jurusan?.nama_kategori}</p>
                     </div>
                     <span style={{
                       fontSize: ".72rem", fontWeight: 600, padding: ".28rem .7rem", borderRadius: 9999,
-                      background: b.status === "Tersedia" ? "#EAF7F0" : "#FEF0EF",
-                      color: b.status === "Tersedia" ? "#2A9D6E" : "#C0503E"
-                    }}>{b.status}</span>
+                      background: b.status_item === "tersedia" ? "#EAF7F0" : "#FEF0EF",
+                      color: b.status_item === "tersedia" ? "#2A9D6E" : "#C0503E"
+                    }}>{b.status_item}</span>
                   </div>
                   <a href="#beranda" className="btn-outline" style={{ width: "100%", justifyContent: "center", fontSize: ".8rem", padding: ".5rem 1rem" }}>
                     Pinjam Sekarang
@@ -580,7 +623,7 @@ function Footer() {
       <Navbar />
       <Hero />
       <Tentang />
-      <Jurusan />
+      <JurusanData />
       <Barang />
       <Kontak />
       <Footer />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DashboardLayout from "./DashboardLayout";
+import DashboardLayout from "./Dashboardlayout";
 
 const COLORS = {
   blue: "#4A90D9", blueDk: "#2563A8", blueDkr: "#1A3F70",

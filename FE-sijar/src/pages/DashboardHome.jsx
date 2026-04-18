@@ -1,41 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "./Dashboardlayout";
 
-// ─── DESIGN TOKENS ────────────────────────────────────────────────────────────
 const C = {
-  blueDkr: "#0F2D52",
-  blueDk: "#1A4A8A",
-  blue: "#2563A8",
-  blueMd: "#4A90D9",
-  blueLt: "#7BB8E8",
-  blueLtr: "#C8E4F8",
-  sky: "#EBF5FD",
-  white: "#FFFFFF",
-  bg: "#F4F8FD",
-  card: "#FFFFFF",
-  tx: "#0F2D52",
-  txM: "#5A7A9B",
-  txL: "#9BB5CC",
-  green: "#10B981",
-  greenDk: "#065F46",
-  greenLt: "#D1FAE5",
-  yellow: "#F59E0B",
-  yellowDk: "#92400E",
-  yellowLt: "#FEF3C7",
-  red: "#EF4444",
-  redDk: "#7F1D1D",
-  redLt: "#FEE2E2",
-  purple: "#7C3AED",
-  purpleLt: "#EDE9FE",
-  purpleDk: "#4C1D95",
-  orange: "#F97316",
-  orangeLt: "#FFEDD5",
-  teal: "#0D9488",
-  tealLt: "#CCFBF1",
+  blueDkr: "#0F2D52", blueDk: "#1A4A8A", blue: "#2563A8",
+  blueMd: "#4A90D9", blueLt: "#7BB8E8", blueLtr: "#C8E4F8",
+  sky: "#EBF5FD", white: "#FFFFFF", bg: "#F4F8FD",
+  tx: "#0F2D52", txM: "#5A7A9B", txL: "#9BB5CC",
+  green: "#10B981", greenDk: "#065F46", greenLt: "#D1FAE5",
+  yellow: "#F59E0B", yellowDk: "#92400E", yellowLt: "#FEF3C7",
+  red: "#EF4444", redDk: "#7F1D1D", redLt: "#FEE2E2",
+  purple: "#7C3AED", purpleLt: "#EDE9FE", purpleDk: "#4C1D95",
+  orange: "#F97316", orangeLt: "#FFEDD5",
+  teal: "#0D9488", tealLt: "#CCFBF1",
 };
 
-// ─── MOCK DATA ─────────────────────────────────────────────────────────────────
 const stats = [
   { label: "Total Peminjaman", val: 24, icon: "📋", bg: C.sky, c: C.blue, border: C.blueLtr, sub: "+3 minggu ini", trend: "+14%", trendUp: true },
   { label: "Sedang Dipinjam", val: 5, icon: "⏳", bg: C.yellowLt, c: C.yellowDk, border: "#FDE68A", sub: "Batas waktu terdekat", trend: "Aktif", trendUp: null },
@@ -89,8 +68,8 @@ const quickLinks = [
   { to: "/dashboard/riwayat", label: "Riwayat", icon: "📋", desc: "Lihat semua riwayat", bg: C.greenLt, c: C.greenDk, border: "#6EE7B7" },
   { to: "/dashboard/inventaris", label: "Inventaris", icon: "🗄️", desc: "Cek ketersediaan", bg: C.yellowLt, c: C.yellowDk, border: "#FDE68A" },
   { to: "/dashboard/jurusan", label: "Data Jurusan", icon: "🏫", desc: "Info jurusan", bg: C.purpleLt, c: C.purpleDk, border: "#C4B5FD" },
-  { to: "/dashboard/laporan", label: "Laporan", icon: "📊", desc: "Statistik & analitik", bg: C.tealLt, c: C.teal, border: "#5EEAD4" },
-  { to: "/dashboard/pengajuan", label: "Pengajuan", icon: "✏️", desc: "Buat pengajuan baru", bg: C.orangeLt, c: "#C2410C", border: "#FDBA74" },
+  { to: "/dashboard/profile", label: "Profil Saya", icon: "👤", desc: "Lihat & edit profil", bg: C.tealLt, c: C.teal, border: "#5EEAD4" },
+  { to: "/dashboard/settings", label: "Pengaturan", icon: "⚙️", desc: "Kelola preferensi", bg: C.orangeLt, c: "#C2410C", border: "#FDBA74" },
 ];
 
 const statusStyle = {
@@ -107,7 +86,6 @@ const jurusanColor = {
   PS: { bg: "#F3E8FF", c: "#7E22CE" },
 };
 
-// ─── MINI CHART COMPONENT ──────────────────────────────────────────────────────
 function MiniBarChart({ data }) {
   const maxVal = Math.max(...data.flatMap(d => [d.pinjam, d.kembali]));
   return (
@@ -115,24 +93,8 @@ function MiniBarChart({ data }) {
       {data.map((d, i) => (
         <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
           <div style={{ width: "100%", display: "flex", gap: 2, alignItems: "flex-end", flex: 1 }}>
-            <div
-              style={{
-                flex: 1, borderRadius: "3px 3px 0 0",
-                background: `linear-gradient(180deg, ${C.blueMd}, ${C.blue})`,
-                height: `${(d.pinjam / maxVal) * 65}px`,
-                transition: "height .4s ease",
-                minHeight: 4,
-              }}
-            />
-            <div
-              style={{
-                flex: 1, borderRadius: "3px 3px 0 0",
-                background: `linear-gradient(180deg, ${C.green}, ${C.greenDk})`,
-                height: `${(d.kembali / maxVal) * 65}px`,
-                transition: "height .4s ease",
-                minHeight: 4,
-              }}
-            />
+            <div style={{ flex: 1, borderRadius: "3px 3px 0 0", background: `linear-gradient(180deg, ${C.blueMd}, ${C.blue})`, height: `${(d.pinjam / maxVal) * 65}px`, minHeight: 4 }} />
+            <div style={{ flex: 1, borderRadius: "3px 3px 0 0", background: `linear-gradient(180deg, ${C.green}, ${C.greenDk})`, height: `${(d.kembali / maxVal) * 65}px`, minHeight: 4 }} />
           </div>
           <span style={{ fontSize: ".6rem", color: C.txM, fontWeight: 600 }}>{d.day}</span>
         </div>
@@ -141,7 +103,6 @@ function MiniBarChart({ data }) {
   );
 }
 
-// ─── DONUT CHART COMPONENT ─────────────────────────────────────────────────────
 function DonutChart({ persen, color, size = 56 }) {
   const r = (size - 10) / 2;
   const circ = 2 * Math.PI * r;
@@ -149,25 +110,19 @@ function DonutChart({ persen, color, size = 56 }) {
   return (
     <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
       <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={`${color}22`} strokeWidth={6} />
-      <circle
-        cx={size / 2} cy={size / 2} r={r}
-        fill="none" stroke={color} strokeWidth={6}
-        strokeDasharray={circ} strokeDashoffset={offset}
-        strokeLinecap="round"
-        style={{ transition: "stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)" }}
-      />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={6}
+        strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
+        style={{ transition: "stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)" }} />
     </svg>
   );
 }
 
-// ─── STAT CARD ─────────────────────────────────────────────────────────────────
 function StatCard({ s, index }) {
   const [counted, setCounted] = useState(0);
   useEffect(() => {
     let start = 0;
     const end = s.val;
-    const dur = 1200;
-    const step = Math.ceil(end / (dur / 16));
+    const step = Math.ceil(end / (1200 / 16));
     const timer = setInterval(() => {
       start += step;
       if (start >= end) { setCounted(end); clearInterval(timer); }
@@ -178,42 +133,22 @@ function StatCard({ s, index }) {
 
   return (
     <div
-      className="stat-card"
-      style={{
-        background: C.white,
-        borderRadius: 20,
-        border: `1.5px solid ${s.border}`,
-        padding: "1.4rem 1.35rem",
-        position: "relative",
-        overflow: "hidden",
-        transition: "box-shadow .25s, transform .25s",
-        animationDelay: `${index * 0.08}s`,
-      }}
+      style={{ background: C.white, borderRadius: 20, border: `1.5px solid ${s.border}`, padding: "1.4rem 1.35rem", position: "relative", overflow: "hidden", transition: "box-shadow .25s, transform .25s" }}
       onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 12px 36px ${s.c}22`; e.currentTarget.style.transform = "translateY(-4px)"; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "translateY(0)"; }}
     >
       <div style={{ position: "absolute", top: -20, right: -20, width: 80, height: 80, borderRadius: "50%", background: s.bg, opacity: .5 }} />
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: ".9rem" }}>
-        <div style={{ width: 46, height: 46, borderRadius: 14, background: s.bg, border: `1.5px solid ${s.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem" }}>
-          {s.icon}
-        </div>
-        <span style={{
-          fontSize: ".68rem", fontWeight: 700,
-          background: s.trendUp === true ? C.greenLt : s.trendUp === false ? C.redLt : C.yellowLt,
-          color: s.trendUp === true ? C.greenDk : s.trendUp === false ? C.redDk : C.yellowDk,
-          padding: ".2rem .6rem", borderRadius: 999,
-        }}>{s.trend}</span>
+        <div style={{ width: 46, height: 46, borderRadius: 14, background: s.bg, border: `1.5px solid ${s.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem" }}>{s.icon}</div>
+        <span style={{ fontSize: ".68rem", fontWeight: 700, background: s.trendUp === true ? C.greenLt : s.trendUp === false ? C.redLt : C.yellowLt, color: s.trendUp === true ? C.greenDk : s.trendUp === false ? C.redDk : C.yellowDk, padding: ".2rem .6rem", borderRadius: 999 }}>{s.trend}</span>
       </div>
-      <p style={{ fontSize: "2.2rem", fontWeight: 800, color: s.c, fontFamily: "'Plus Jakarta Sans',sans-serif", lineHeight: 1, letterSpacing: "-1px" }}>
-        {counted}
-      </p>
+      <p style={{ fontSize: "2.2rem", fontWeight: 800, color: s.c, fontFamily: "'Plus Jakarta Sans',sans-serif", lineHeight: 1, letterSpacing: "-1px" }}>{counted}</p>
       <p style={{ fontWeight: 700, fontSize: ".84rem", color: C.tx, margin: ".35rem 0 .2rem" }}>{s.label}</p>
       <p style={{ fontSize: ".72rem", color: C.txM }}>{s.sub}</p>
     </div>
   );
 }
 
-// ─── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function DashboardHome() {
   const now = new Date();
   const jam = now.getHours();
@@ -221,8 +156,6 @@ export default function DashboardHome() {
   const emoji = jam < 11 ? "🌤️" : jam < 15 ? "☀️" : jam < 18 ? "🌇" : "🌙";
   const [activeTab, setActiveTab] = useState("semua");
   const [searchQ, setSearchQ] = useState("");
-  const [showNotif, setShowNotif] = useState(false);
-  const [notifRead, setNotifRead] = useState(false);
 
   const filteredActivity = recentActivity.filter(a => {
     if (activeTab !== "semua" && a.status !== activeTab) return false;
@@ -244,23 +177,17 @@ export default function DashboardHome() {
         .dh-root { font-family: 'Plus Jakarta Sans', sans-serif; background: ${C.bg}; min-height: 100vh; padding: 1.5rem; }
         .fade-in { animation: fadeInUp .5s ease both; }
         @keyframes fadeInUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-        .pulse { animation: pulse 2s infinite; }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
-        .shimmer { background: linear-gradient(90deg,${C.sky} 25%,${C.blueLtr} 50%,${C.sky} 75%); background-size:200% 100%; animation:shimmer 2s infinite; }
-        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
         .tab-btn { padding:.4rem .95rem; border-radius:999px; border:1.5px solid transparent; font-weight:600; font-size:.77rem; cursor:pointer; transition:all .2s; font-family:inherit; }
         .tab-btn:hover { background:${C.sky}; }
         .tab-btn.active { background:${C.blue}; color:#fff; border-color:${C.blue}; }
         .tab-btn:not(.active) { background:${C.white}; color:${C.txM}; border-color:${C.blueLtr}; }
-        .notif-item { padding:.75rem 1rem; border-radius:12px; border-left:3px solid transparent; margin-bottom:.5rem; font-size:.8rem; transition:background .2s; cursor:pointer; }
-        .notif-item:hover { background:${C.sky}; }
         .quick-card { border-radius:16px; padding:1.1rem; display:flex; align-items:center; gap:.8rem; text-decoration:none; transition:all .22s; border:1.5px solid transparent; }
         .quick-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(37,99,168,.15); }
         .popular-row { display:flex; align-items:center; gap:.75rem; padding:.7rem 0; border-bottom:1px solid ${C.sky}; }
         .popular-row:last-child { border-bottom:none; padding-bottom:0; }
         .search-input { width:100%; border:1.5px solid ${C.blueLtr}; border-radius:12px; padding:.55rem 1rem .55rem 2.5rem; font-size:.82rem; font-family:inherit; outline:none; background:${C.white}; color:${C.tx}; transition:border .2s; }
         .search-input:focus { border-color:${C.blue}; }
-        .activity-row { display:flex; align-items:center; justify-content:space-between; padding:.85rem .75rem; border-radius:12px; gap:1rem; transition:background .15s; cursor:default; }
+        .activity-row { display:flex; align-items:center; justify-content:space-between; padding:.85rem .75rem; border-radius:12px; gap:1rem; transition:background .15s; }
         .activity-row:hover { background:${C.sky}; }
         .badge { display:inline-flex; align-items:center; gap:.3rem; padding:.22rem .65rem; border-radius:999px; font-size:.7rem; font-weight:700; }
         .score-bar { height:4px; border-radius:99px; background:${C.sky}; overflow:hidden; margin-top:.3rem; }
@@ -270,7 +197,7 @@ export default function DashboardHome() {
 
       <div className="dh-root">
 
-        {/* ── TOP BAR ── */}
+        {/* TOP BAR — tanpa bell */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }} className="fade-in">
           <div>
             <p style={{ fontSize: ".75rem", color: C.txM, fontWeight: 600, marginBottom: ".2rem" }}>
@@ -280,103 +207,39 @@ export default function DashboardHome() {
               {emoji} {sapa}, Ahmad!
             </h1>
           </div>
-          <div style={{ display: "flex", gap: ".75rem", alignItems: "center" }}>
-            {/* Notifikasi Bell */}
-            <div style={{ position: "relative" }}>
-              <button
-                onClick={() => { setShowNotif(!showNotif); setNotifRead(true); }}
-                style={{ width: 40, height: 40, borderRadius: 12, border: `1.5px solid ${C.blueLtr}`, background: C.white, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", position: "relative" }}
-              >
-                🔔
-                {!notifRead && (
-                  <span style={{ position: "absolute", top: 6, right: 6, width: 8, height: 8, borderRadius: "50%", background: C.red, border: `2px solid ${C.white}` }} className="pulse" />
-                )}
-              </button>
-              {showNotif && (
-                <div style={{
-                  position: "absolute", right: 0, top: 48, width: 300, background: C.white,
-                  borderRadius: 16, border: `1.5px solid ${C.blueLtr}`, boxShadow: "0 16px 48px rgba(37,99,168,.15)",
-                  padding: "1rem", zIndex: 999,
-                }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".75rem" }}>
-                    <p style={{ fontWeight: 700, fontSize: ".85rem", color: C.tx }}>Notifikasi</p>
-                    <span style={{ fontSize: ".7rem", color: C.blue, fontWeight: 600, cursor: "pointer" }}>Tandai semua dibaca</span>
-                  </div>
-                  {pengumumans.map((n, i) => (
-                    <div key={i} className="notif-item" style={{
-                      borderLeftColor: n.tipe === "info" ? C.blue : n.tipe === "success" ? C.green : C.yellow,
-                      background: n.tipe === "info" ? C.sky : n.tipe === "success" ? C.greenLt : C.yellowLt,
-                    }}>
-                      <p style={{ fontWeight: 700, fontSize: ".8rem", color: C.tx, marginBottom: ".2rem" }}>{n.title}</p>
-                      <p style={{ fontSize: ".73rem", color: C.txM, lineHeight: 1.4 }}>{n.desc}</p>
-                      <p style={{ fontSize: ".65rem", color: C.txL, marginTop: ".3rem" }}>{n.tgl} April</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            {/* Avatar */}
-            <div style={{ display: "flex", alignItems: "center", gap: ".6rem", background: C.white, border: `1.5px solid ${C.blueLtr}`, borderRadius: 14, padding: ".4rem .85rem .4rem .5rem", cursor: "pointer" }}>
-              <div style={{ width: 32, height: 32, borderRadius: "50%", background: `linear-gradient(135deg, ${C.blue}, ${C.blueMd})`, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: ".8rem" }}>
-                AF
-              </div>
-              <div>
-                <p style={{ fontWeight: 700, fontSize: ".78rem", color: C.tx, lineHeight: 1 }}>Ahmad Fauzi</p>
-                <p style={{ fontSize: ".66rem", color: C.txM }}>XI PPLG 3</p>
-              </div>
+          {/* Avatar only */}
+          <div style={{ display: "flex", alignItems: "center", gap: ".6rem", background: C.white, border: `1.5px solid ${C.blueLtr}`, borderRadius: 14, padding: ".4rem .85rem .4rem .5rem", cursor: "pointer" }}>
+            <div style={{ width: 32, height: 32, borderRadius: "50%", background: `linear-gradient(135deg, ${C.blue}, ${C.blueMd})`, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: ".8rem" }}>AF</div>
+            <div>
+              <p style={{ fontWeight: 700, fontSize: ".78rem", color: C.tx, lineHeight: 1 }}>Ahmad Fauzi</p>
+              <p style={{ fontSize: ".66rem", color: C.txM }}>XI PPLG 3</p>
             </div>
           </div>
         </div>
 
-        {/* ── HERO BANNER ── */}
-        <div
-          className="fade-in"
-          style={{
-            background: `linear-gradient(135deg, ${C.blueDkr} 0%, ${C.blue} 60%, ${C.blueMd} 100%)`,
-            borderRadius: 24, padding: "2rem 2.25rem", marginBottom: "1.5rem",
-            position: "relative", overflow: "hidden",
-            animationDelay: ".05s",
-          }}
-        >
-          {/* BG shapes */}
-          {[
-            { top: -40, right: -40, size: 200, op: .07 },
-            { top: 60, right: 120, size: 120, op: .04 },
-            { bottom: -50, left: 200, size: 160, op: .05 },
-          ].map((s, i) => (
+        {/* HERO BANNER */}
+        <div className="fade-in" style={{ background: `linear-gradient(135deg, ${C.blueDkr} 0%, ${C.blue} 60%, ${C.blueMd} 100%)`, borderRadius: 24, padding: "2rem 2.25rem", marginBottom: "1.5rem", position: "relative", overflow: "hidden", animationDelay: ".05s" }}>
+          {[{ top: -40, right: -40, size: 200, op: .07 }, { top: 60, right: 120, size: 120, op: .04 }, { bottom: -50, left: 200, size: 160, op: .05 }].map((s, i) => (
             <div key={i} style={{ position: "absolute", top: s.top, right: s.right, bottom: s.bottom, left: s.left, width: s.size, height: s.size, borderRadius: "50%", background: `rgba(255,255,255,${s.op})` }} />
           ))}
           <div style={{ position: "relative", zIndex: 1, display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
             <div>
-              <p style={{ color: "rgba(255,255,255,.65)", fontSize: ".8rem", fontWeight: 500, marginBottom: ".5rem" }}>
-                Dashboard Peminjaman · SMKN 8 Semarang
-              </p>
+              <p style={{ color: "rgba(255,255,255,.65)", fontSize: ".8rem", fontWeight: 500, marginBottom: ".5rem" }}>Dashboard Peminjaman · SMKN 8 Semarang</p>
               <h2 style={{ fontSize: "1.65rem", fontWeight: 800, color: "#fff", marginBottom: ".6rem", lineHeight: 1.2 }}>
                 Kamu punya <span style={{ color: "#FBBF24" }}>1 barang terlambat</span> 🚨<br />
                 dan <span style={{ color: "#6EE7B7" }}>5 barang</span> sedang dipinjam
               </h2>
               <p style={{ color: "rgba(255,255,255,.7)", fontSize: ".85rem", maxWidth: 440, lineHeight: 1.6, marginBottom: "1.1rem" }}>
-                Sisa waktu peminjaman terdekat kamu adalah <strong style={{ color: "#fff" }}>2 hari lagi</strong> untuk Kabel HDMI. Yuk segera persiapkan pengembalian!
+                Sisa waktu peminjaman terdekat kamu adalah <strong style={{ color: "#fff" }}>2 hari lagi</strong> untuk Kabel HDMI.
               </p>
               <div style={{ display: "flex", gap: ".65rem", flexWrap: "wrap" }}>
-                <Link to="/dashboard/peminjaman" className="hero-chip" style={{ background: "#fff", color: C.blue }}>
-                  📦 Pinjam Sekarang
-                </Link>
-                <Link to="/dashboard/riwayat" className="hero-chip" style={{ background: "rgba(255,255,255,.15)", color: "#fff", border: "1.5px solid rgba(255,255,255,.25)" }}>
-                  📋 Lihat Riwayat
-                </Link>
-                <Link to="/dashboard/inventaris" className="hero-chip" style={{ background: "rgba(255,255,255,.15)", color: "#fff", border: "1.5px solid rgba(255,255,255,.25)" }}>
-                  🗄️ Inventaris
-                </Link>
+                <Link to="/dashboard/peminjaman" className="hero-chip" style={{ background: "#fff", color: C.blue }}>📦 Pinjam Sekarang</Link>
+                <Link to="/dashboard/riwayat" className="hero-chip" style={{ background: "rgba(255,255,255,.15)", color: "#fff", border: "1.5px solid rgba(255,255,255,.25)" }}>📋 Lihat Riwayat</Link>
+                <Link to="/dashboard/inventaris" className="hero-chip" style={{ background: "rgba(255,255,255,.15)", color: "#fff", border: "1.5px solid rgba(255,255,255,.25)" }}>🗄️ Inventaris</Link>
               </div>
             </div>
-            {/* Hero Stats Pill */}
             <div style={{ display: "flex", gap: ".65rem", flexWrap: "wrap" }}>
-              {[
-                { label: "Skor Tepat Waktu", val: "87%", color: "#6EE7B7" },
-                { label: "Rank Kelas", val: "#4", color: "#FDE68A" },
-                { label: "Badge", val: "⭐ 3", color: "#C4B5FD" },
-              ].map((p, i) => (
+              {[{ label: "Skor Tepat Waktu", val: "87%", color: "#6EE7B7" }, { label: "Rank Kelas", val: "#4", color: "#FDE68A" }, { label: "Badge", val: "⭐ 3", color: "#C4B5FD" }].map((p, i) => (
                 <div key={i} style={{ background: "rgba(255,255,255,.12)", borderRadius: 14, padding: ".65rem 1rem", textAlign: "center", border: "1px solid rgba(255,255,255,.2)", minWidth: 80 }}>
                   <p style={{ fontWeight: 800, fontSize: "1.1rem", color: p.color, fontFamily: "'Plus Jakarta Sans',sans-serif" }}>{p.val}</p>
                   <p style={{ fontSize: ".65rem", color: "rgba(255,255,255,.65)", marginTop: ".1rem" }}>{p.label}</p>
@@ -386,15 +249,15 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        {/* ── STAT CARDS ── */}
+        {/* STAT CARDS */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
           {stats.map((s, i) => <StatCard key={s.label} s={s} index={i} />)}
         </div>
 
-        {/* ── MAIN GRID ── */}
+        {/* MAIN GRID */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: "1.25rem", alignItems: "flex-start" }}>
 
-          {/* ── LEFT COLUMN ── */}
+          {/* LEFT */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
 
             {/* Weekly Chart */}
@@ -405,12 +268,8 @@ export default function DashboardHome() {
                   <p style={{ fontSize: ".73rem", color: C.txM }}>Peminjaman vs pengembalian 7 hari terakhir</p>
                 </div>
                 <div style={{ display: "flex", gap: ".75rem", alignItems: "center" }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: ".35rem", fontSize: ".72rem", color: C.txM }}>
-                    <span style={{ width: 10, height: 10, borderRadius: 3, background: C.blue, display: "inline-block" }} /> Pinjam
-                  </span>
-                  <span style={{ display: "flex", alignItems: "center", gap: ".35rem", fontSize: ".72rem", color: C.txM }}>
-                    <span style={{ width: 10, height: 10, borderRadius: 3, background: C.green, display: "inline-block" }} /> Kembali
-                  </span>
+                  <span style={{ display: "flex", alignItems: "center", gap: ".35rem", fontSize: ".72rem", color: C.txM }}><span style={{ width: 10, height: 10, borderRadius: 3, background: C.blue, display: "inline-block" }} /> Pinjam</span>
+                  <span style={{ display: "flex", alignItems: "center", gap: ".35rem", fontSize: ".72rem", color: C.txM }}><span style={{ width: 10, height: 10, borderRadius: 3, background: C.green, display: "inline-block" }} /> Kembali</span>
                 </div>
               </div>
               <MiniBarChart data={weeklyData} />
@@ -434,16 +293,10 @@ export default function DashboardHome() {
                 <h2 style={{ fontSize: ".92rem", fontWeight: 700, color: C.blueDkr }}>🕐 Aktivitas Terbaru</h2>
                 <Link to="/dashboard/riwayat" style={{ fontSize: ".78rem", color: C.blue, fontWeight: 700, textDecoration: "none" }}>Lihat semua →</Link>
               </div>
-              {/* Search + Filter */}
               <div style={{ display: "flex", gap: ".65rem", marginBottom: "1rem", flexWrap: "wrap" }}>
                 <div style={{ position: "relative", flex: 1, minWidth: 180 }}>
                   <span style={{ position: "absolute", left: ".75rem", top: "50%", transform: "translateY(-50%)", fontSize: ".85rem" }}>🔍</span>
-                  <input
-                    className="search-input"
-                    placeholder="Cari barang..."
-                    value={searchQ}
-                    onChange={e => setSearchQ(e.target.value)}
-                  />
+                  <input className="search-input" placeholder="Cari barang..." value={searchQ} onChange={e => setSearchQ(e.target.value)} />
                 </div>
                 <div style={{ display: "flex", gap: ".4rem" }}>
                   {["semua", "aktif", "kembali", "telat"].map(t => (
@@ -454,36 +307,28 @@ export default function DashboardHome() {
                 </div>
               </div>
               {filteredActivity.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "2rem 0", color: C.txM, fontSize: ".82rem" }}>
-                  Tidak ada data yang ditemukan
-                </div>
-              ) : (
-                filteredActivity.map((a, i) => (
-                  <div key={i} className="activity-row">
-                    <div style={{ display: "flex", alignItems: "center", gap: ".75rem" }}>
-                      <div style={{ position: "relative" }}>
-                        <div style={{ width: 42, height: 42, borderRadius: 13, background: statusStyle[a.status].bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.05rem", flexShrink: 0 }}>
-                          {a.status === "aktif" ? "⏳" : a.status === "kembali" ? "✅" : "⚠️"}
-                        </div>
-                        <span style={{ position: "absolute", bottom: -2, right: -2, width: 10, height: 10, borderRadius: "50%", background: statusStyle[a.status].dot, border: `2px solid ${C.white}` }} />
+                <div style={{ textAlign: "center", padding: "2rem 0", color: C.txM, fontSize: ".82rem" }}>Tidak ada data ditemukan</div>
+              ) : filteredActivity.map((a, i) => (
+                <div key={i} className="activity-row">
+                  <div style={{ display: "flex", alignItems: "center", gap: ".75rem" }}>
+                    <div style={{ position: "relative" }}>
+                      <div style={{ width: 42, height: 42, borderRadius: 13, background: statusStyle[a.status].bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.05rem", flexShrink: 0 }}>
+                        {a.status === "aktif" ? "⏳" : a.status === "kembali" ? "✅" : "⚠️"}
                       </div>
-                      <div>
-                        <p style={{ fontWeight: 700, fontSize: ".83rem", color: C.tx }}>{a.item}</p>
-                        <div style={{ display: "flex", alignItems: "center", gap: ".4rem", marginTop: ".25rem" }}>
-                          <span className="badge" style={{ background: jurusanColor[a.jurusan]?.bg, color: jurusanColor[a.jurusan]?.c }}>
-                            {a.jurusan}
-                          </span>
-                          <span style={{ fontSize: ".7rem", color: C.txM }}>{a.tgl}</span>
-                          <span style={{ fontSize: ".7rem", color: C.txL }}>· {a.who}</span>
-                        </div>
+                      <span style={{ position: "absolute", bottom: -2, right: -2, width: 10, height: 10, borderRadius: "50%", background: statusStyle[a.status].dot, border: `2px solid ${C.white}` }} />
+                    </div>
+                    <div>
+                      <p style={{ fontWeight: 700, fontSize: ".83rem", color: C.tx }}>{a.item}</p>
+                      <div style={{ display: "flex", alignItems: "center", gap: ".4rem", marginTop: ".25rem" }}>
+                        <span className="badge" style={{ background: jurusanColor[a.jurusan]?.bg, color: jurusanColor[a.jurusan]?.c }}>{a.jurusan}</span>
+                        <span style={{ fontSize: ".7rem", color: C.txM }}>{a.tgl}</span>
+                        <span style={{ fontSize: ".7rem", color: C.txL }}>· {a.who}</span>
                       </div>
                     </div>
-                    <span className="badge" style={{ background: statusStyle[a.status].bg, color: statusStyle[a.status].c, flexShrink: 0 }}>
-                      {statusStyle[a.status].label}
-                    </span>
                   </div>
-                ))
-              )}
+                  <span className="badge" style={{ background: statusStyle[a.status].bg, color: statusStyle[a.status].c, flexShrink: 0 }}>{statusStyle[a.status].label}</span>
+                </div>
+              ))}
             </div>
 
             {/* Quick Links */}
@@ -501,24 +346,19 @@ export default function DashboardHome() {
                 ))}
               </div>
             </div>
-
           </div>
 
-          {/* ── RIGHT COLUMN ── */}
+          {/* RIGHT */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
 
             {/* Profile Card */}
             <div className="fade-in" style={{ background: `linear-gradient(145deg, ${C.blueDkr}, ${C.blue})`, borderRadius: 20, padding: "1.35rem", animationDelay: ".1s" }}>
               <div style={{ display: "flex", alignItems: "center", gap: ".85rem", marginBottom: "1.1rem" }}>
-                <div style={{ width: 52, height: 52, borderRadius: "50%", background: "rgba(255,255,255,.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: "1.15rem", border: "2px solid rgba(255,255,255,.3)", flexShrink: 0 }}>
-                  AF
-                </div>
+                <div style={{ width: 52, height: 52, borderRadius: "50%", background: "rgba(255,255,255,.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: "1.15rem", border: "2px solid rgba(255,255,255,.3)", flexShrink: 0 }}>AF</div>
                 <div>
                   <p style={{ fontWeight: 800, fontSize: ".92rem", color: "#fff" }}>Ahmad Fauzi</p>
                   <p style={{ fontSize: ".72rem", color: "rgba(255,255,255,.65)", marginBottom: ".3rem" }}>XI PPLG 3 · SMKN 8 Semarang</p>
-                  <span style={{ background: "rgba(255,255,255,.15)", color: "#fff", fontSize: ".67rem", fontWeight: 700, padding: ".15rem .6rem", borderRadius: 999, border: "1px solid rgba(255,255,255,.25)" }}>
-                    🎖️ Peminjam Aktif
-                  </span>
+                  <span style={{ background: "rgba(255,255,255,.15)", color: "#fff", fontSize: ".67rem", fontWeight: 700, padding: ".15rem .6rem", borderRadius: 999, border: "1px solid rgba(255,255,255,.25)" }}>🎖️ Peminjam Aktif</span>
                 </div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".5rem", marginBottom: ".85rem" }}>
@@ -529,7 +369,6 @@ export default function DashboardHome() {
                   </div>
                 ))}
               </div>
-              {/* Skor bar */}
               <div style={{ marginBottom: ".85rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".3rem" }}>
                   <p style={{ fontSize: ".73rem", color: "rgba(255,255,255,.75)", fontWeight: 600 }}>Skor Ketepatan</p>
@@ -560,11 +399,7 @@ export default function DashboardHome() {
                         {" "}· Batas: {b.batas}
                       </p>
                     </div>
-                    <span style={{
-                      fontSize: ".68rem", fontWeight: 700, padding: ".2rem .55rem", borderRadius: 999,
-                      background: b.telat ? C.red : b.sisaHari <= 2 ? C.yellow : C.green,
-                      color: "#fff",
-                    }}>
+                    <span style={{ fontSize: ".68rem", fontWeight: 700, padding: ".2rem .55rem", borderRadius: 999, background: b.telat ? C.red : b.sisaHari <= 2 ? C.yellow : C.green, color: "#fff" }}>
                       {b.telat ? `+${Math.abs(b.sisaHari)}h telat` : `${b.sisaHari}h lagi`}
                     </span>
                   </div>
@@ -586,17 +421,13 @@ export default function DashboardHome() {
               </div>
               {popularItems.map((p, i) => (
                 <div key={i} className="popular-row">
-                  <div style={{ width: 28, height: 28, borderRadius: 9, background: C.sky, display: "flex", alignItems: "center", justifyContent: "center", fontSize: ".78rem", fontWeight: 800, color: C.blue, flexShrink: 0 }}>
-                    {i + 1}
-                  </div>
+                  <div style={{ width: 28, height: 28, borderRadius: 9, background: C.sky, display: "flex", alignItems: "center", justifyContent: "center", fontSize: ".78rem", fontWeight: 800, color: C.blue, flexShrink: 0 }}>{i + 1}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontWeight: 700, fontSize: ".8rem", color: C.tx, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.nama}</p>
                     <div style={{ display: "flex", alignItems: "center", gap: ".4rem", marginTop: ".2rem" }}>
                       <span style={{ fontSize: ".65rem", color: C.txM }}>Dipinjam {p.jml}x</span>
                       <span style={{ width: 3, height: 3, borderRadius: "50%", background: C.txL, flexShrink: 0 }} />
-                      <span style={{ fontSize: ".65rem", color: p.stok <= 1 ? C.red : C.green, fontWeight: 700 }}>
-                        Stok: {p.stok}/{p.total}
-                      </span>
+                      <span style={{ fontSize: ".65rem", color: p.stok <= 1 ? C.red : C.green, fontWeight: 700 }}>Stok: {p.stok}/{p.total}</span>
                     </div>
                     <div className="score-bar">
                       <div className="score-fill" style={{ width: `${(p.jml / 15) * 100}%`, background: `linear-gradient(90deg, ${C.blueMd}, ${C.blue})` }} />
@@ -611,13 +442,7 @@ export default function DashboardHome() {
             <div className="fade-in" style={{ background: C.white, borderRadius: 20, border: `1.5px solid ${C.blueLtr}`, padding: "1.25rem", animationDelay: ".25s" }}>
               <h3 style={{ fontSize: ".88rem", fontWeight: 700, color: C.blueDkr, marginBottom: "1rem" }}>📢 Pengumuman</h3>
               {pengumumans.map((n, i) => (
-                <div key={i} style={{
-                  padding: ".75rem", borderRadius: 12, marginBottom: ".6rem",
-                  background: n.tipe === "info" ? C.sky : n.tipe === "success" ? C.greenLt : C.yellowLt,
-                  border: `1px solid ${n.tipe === "info" ? C.blueLtr : n.tipe === "success" ? "#6EE7B7" : "#FDE68A"}`,
-                  borderLeft: `3px solid ${n.tipe === "info" ? C.blue : n.tipe === "success" ? C.green : C.yellow}`,
-                  cursor: "pointer",
-                }}>
+                <div key={i} style={{ padding: ".75rem", borderRadius: 12, marginBottom: ".6rem", background: n.tipe === "info" ? C.sky : n.tipe === "success" ? C.greenLt : C.yellowLt, border: `1px solid ${n.tipe === "info" ? C.blueLtr : n.tipe === "success" ? "#6EE7B7" : "#FDE68A"}`, borderLeft: `3px solid ${n.tipe === "info" ? C.blue : n.tipe === "success" ? C.green : C.yellow}`, cursor: "pointer" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: ".5rem" }}>
                     <p style={{ fontWeight: 700, fontSize: ".8rem", color: C.tx, flex: 1 }}>{n.title}</p>
                     <span style={{ fontSize: ".65rem", color: C.txM, flexShrink: 0 }}>{n.tgl} Apr</span>
@@ -626,7 +451,6 @@ export default function DashboardHome() {
                 </div>
               ))}
             </div>
-
           </div>
         </div>
       </div>
